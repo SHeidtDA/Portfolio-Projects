@@ -110,6 +110,33 @@ SELECT *, (rollingpeoplevaccinated/population)*100 as RollingPeopleVaccinatedPer
 FROM PopvsVac
 
 
+-- TEMP TABLE
+
+DROP Table if exists #PercentPopulationVaccinated
+Create Table #PercentPopulationVaccinated
+(
+Continent nvarchar(255),
+Location nvarchar(255),
+Date datetime,
+Population numeric,
+New_vaccinations numeric,
+RollingPeopleVaccinated numeric
+)
+
+
+Insert into #PercentPopulationVaccinated
+SELECT 
+dea.continent, dea.location, dea.date, dea.population,vac.new_vaccinations, SUM(cast(vac.new_vaccinations as int)) OVER (Partition by dea.location ORDER by dea.location, dea.date) AS rollingpeoplevaccinated
+FROM `dap-c3.CovidProject.CovidDeaths` dea
+JOIN `dap-c3.CovidProject.CovidVaccinations` vac
+  ON dea.location = vac.location
+  AND dea.date = vac.date
+WHERE dea.continent is not null
+-- ORDER BY 2,3
+
+SELECT *, (rollingpeoplevaccinated/population)*100 as RollingPeopleVaccinatedPercent
+FROM #PercentPopulationVaccinated
+
 -- Creating View to store data for later visualizations 
 
 CREATE VIEW PercentPopulationVaccinated as
@@ -121,3 +148,6 @@ JOIN `dap-c3.CovidProject.CovidVaccinations` vac
   AND dea.date = vac.date
 WHERE dea.continent is not null
 -- ORDER BY 2,3
+
+SELECT * 
+FROM PercentPopulationVaccinated
