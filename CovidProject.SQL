@@ -110,8 +110,9 @@ SELECT *, (rollingpeoplevaccinated/population)*100 as RollingPeopleVaccinatedPer
 FROM PopvsVac
 
 
--- Creating View to store data for later visualizations which I have saved below on a separate window.
+-- Creating View to store data for later visualizations 
 
+CREATE VIEW PercentPopulationVaccinated as
 SELECT 
 dea.continent, dea.location, dea.date, dea.population,vac.new_vaccinations, SUM(cast(vac.new_vaccinations as int)) OVER (Partition by dea.location ORDER by dea.location, dea.date) AS rollingpeoplevaccinated
 FROM `dap-c3.CovidProject.CovidDeaths` dea
