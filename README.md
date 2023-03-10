@@ -1,2 +1,2 @@
-# SQL-Portfolio
+# Portfolio Projects
 My SQL Queries for Projects
